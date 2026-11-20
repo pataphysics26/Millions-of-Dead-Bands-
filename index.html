@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Millions of Dead Bands</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -14,50 +15,35 @@
       text-align: center;
     }
     header {
-      padding: 24px;
+      padding: 22px;
       border-bottom: 1px solid #444;
-      font-family: Arial, sans-serif;
+      font: 12px Arial, sans-serif;
       letter-spacing: 3px;
-      font-size: 12px;
     }
-    main {
-      max-width: 850px;
-      margin: 90px auto;
-      padding: 24px;
-    }
+    main { max-width: 850px; margin: 65px auto; padding: 24px; }
     h1 {
-      font-size: clamp(42px, 8vw, 82px);
+      font-size: clamp(42px, 8vw, 76px);
       line-height: 1;
-      margin-bottom: 20px;
       text-transform: uppercase;
     }
-    .subtitle {
-      color: #c7a66b;
-      font-size: 20px;
-      margin-bottom: 45px;
+    .subtitle { color: #c7a66b; font-size: 21px; }
+    .intro { color: #ccc; line-height: 1.7; font-size: 17px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 40px 0;
     }
-    .intro {
-      color: #ccc;
-      font-size: 18px;
-      line-height: 1.7;
-      max-width: 620px;
-      margin: 0 auto 35px;
+    .stat {
+      border: 1px solid #555;
+      padding: 20px 8px;
     }
-    button {
-      background: #c7a66b;
-      color: #111;
-      border: 0;
-      padding: 17px 35px;
-      font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
-      letter-spacing: 1px;
-    }
-    button:hover { background: #e0c18b; }
-    footer {
-      color: #777;
-      font: 12px Arial, sans-serif;
-      padding: 30px;
+    .number { display: block; color: #c7a66b; font-size: 32px; }
+    .label { color: #aaa; font: 12px Arial, sans-serif; }
+    #status { color: #c7a66b; font: 14px Arial, sans-serif; }
+    footer { color: #777; font: 12px Arial, sans-serif; padding: 30px; }
+    @media(max-width: 500px) {
+      .stats { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -67,14 +53,70 @@
     <h1>Millions of<br>Dead Bands</h1>
     <div class="subtitle">576 Artists. One Champion.</div>
     <p class="intro">
-      The ultimate head-to-head tournament to determine the greatest
-      bands and artists in the history of popular music.
-      Thirty-six groups. Hundreds of matchups. One winner.
+      Thirty-six groups. Hundreds of head-to-head matchups.
+      One winner. Help decide the greatest artists in the
+      history of popular music.
     </p>
-    <button onclick="alert('The voting tournament is coming soon!')">
-      ENTER THE TOURNAMENT
-    </button>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="number" id="artists">—</span>
+        <span class="label">ARTISTS</span>
+      </div>
+      <div class="stat">
+        <span class="number" id="groups">—</span>
+        <span class="label">GROUPS</span>
+      </div>
+      <div class="stat">
+        <span class="number" id="matches">—</span>
+        <span class="label">MATCHUPS</span>
+      </div>
+    </div>
+
+    <p id="status">Connecting to tournament database...</p>
   </main>
   <footer>Millions of Dead Bands · A celebration of popular music</footer>
+
+  <script>
+   const SUPABASE_URL = "https://ungpcizkwvbndkmxslpp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_e5IgpKe0rsgSTy5n8L1Hxg_3cGLVOhB";
+
+    async function loadTournament() {
+      const status = document.getElementById("status");
+
+      try {
+        const db = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+        const [artistResult, groupResult, matchResult] =
+          await Promise.all([
+            db.from("artists").select("id", { count: "exact", head: true }),
+            db.from("groups").select("id", { count: "exact", head: true }),
+            db.from("matches").select("id", { count: "exact", head: true })
+          ]);
+
+        if (artistResult.error) throw artistResult.error;
+        if (groupResult.error) throw groupResult.error;
+        if (matchResult.error) throw matchResult.error;
+
+        document.getElementById("artists").textContent =
+          artistResult.count ?? 0;
+        document.getElementById("groups").textContent =
+          groupResult.count ?? 0;
+        document.getElementById("matches").textContent =
+          matchResult.count ?? 0;
+
+        status.textContent = "Database connected successfully.";
+      } catch (error) {
+        console.error(error);
+        status.textContent =
+          "Connection problem: " + error.message;
+      }
+    }
+
+    loadTournament();
+  </script>
 </body>
 </html>
