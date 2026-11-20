@@ -117,8 +117,17 @@
           details[key] = error[key];
         }
 
-        status.textContent =
-          "Connection problem: " + JSON.stringify(details);
+        status.textContent = "Connection problem: " + (
+    error?.message ||
+    error?.details ||
+    error?.hint ||
+    error?.code ||
+    String(error)
+);
+
+console.error("FULL ERROR:", error);
+console.error("ERROR PROPERTIES:", Object.getOwnPropertyNames(error || {}));
+console.error("ERROR STACK:", error?.stack);
       }
     }
 
