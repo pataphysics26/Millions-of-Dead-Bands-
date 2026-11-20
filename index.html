@@ -109,10 +109,10 @@
           matchResult.count ?? 0;
 
         status.textContent = "Database connected successfully.";
-      } catch (error) {
-        console.error(error);
+        } catch (error) {
+        console.error("Supabase connection error:", error);
         status.textContent =
-          "Connection problem: " + error.message;
+          "Connection problem: " + (error.message || JSON.stringify(error));
       }
     }
 
