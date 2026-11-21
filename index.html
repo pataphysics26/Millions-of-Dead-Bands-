@@ -54,13 +54,13 @@ function groupName(n){return "Group "+n}
 function artistName(id){return artists.find(a=>a.id===id)?.name||"To be determined"}
 function voteCount(matchId,artistId){return votes.filter(v=>v.match_id===matchId&&v.artist_id===artistId).length}
 function matchOpen(m){return m.status==="pending"&&(!m.closes_at||new Date(m.closes_at)>new Date())}
-async function refreshVotes(){const r=await db.from("votes").select("match_id,artist_id");if(!r.error)votes=r.data||[]}
+async function refreshVotes(){const r=await db.rpc("get_tournament_vote_totals_v1");if(!r.error)votes=r.data||[]}
 async function load(){
 try{
 let auth=await db.auth.getSession();user=auth.data.session?.user||null;
 if(!user){const signed=await db.auth.signInAnonymously();if(signed.error)throw signed.error;user=signed.data.user;}
 $("vote-identity").textContent="Voting as a guest";
-await db.rpc("close_expired_tournament_matches");
+await db.rpc("close_expired_tournament_matches_v1");
 const [ar,gr,mr]=await Promise.all([
 db.from("artists").select("id,group_id,slot,name").order("group_id").order("slot"),
 db.from("groups").select("id,tournament_id,group_number").eq("tournament_id",TOURNAMENT_ID).order("group_number"),
@@ -72,7 +72,7 @@ await refreshVotes();
 $("artists-count").textContent=artists.length;$("groups-count").textContent=groups.length;$("matches-count").textContent=matches.length;
 $("connection").textContent="Database connected · Guest voting enabled";
 $("vote-group").innerHTML='<option value="all">All groups</option>'+groups.map(g=>'<option value="'+g.group_number+'">'+groupName(g.group_number)+'</option>').join("");
-const admin=await db.rpc("is_tournament_admin");isAdmin=!!admin.data;
+const admin=await db.rpc("is_tournament_admin_v1");isAdmin=!!admin.data;
 }catch(e){console.error(e);$("connection").textContent="Database setup incomplete: "+(e.message||String(e));$("vote-list").innerHTML='<div class="notice error">Unable to load tournament data. Check the database setup instructions in the repository and enable Supabase anonymous sign-ins.</div>';}
 }
 function renderVotes(){
@@ -89,7 +89,7 @@ return '<article class="match-card"><div class="match-meta">'+(m.stage===1?group
 $("vote-group").addEventListener("change",renderVotes);$("vote-status").addEventListener("change",renderVotes);
 async function castVote(matchId,artistId){
 const msg=$("vote-message");msg.classList.remove("hidden","error","success");msg.textContent="Submitting your vote…";
-const r=await db.rpc("cast_tournament_vote",{p_match_id:matchId,p_artist_id:artistId});
+const r=await db.rpc("cast_tournament_vote_v1",{p_match_id:matchId,p_artist_id:artistId});
 if(r.error){msg.classList.add("error");msg.textContent=r.error.message||"Vote could not be submitted.";}
 else{msg.classList.add("success");msg.textContent="Your vote has been recorded. Thank you.";await refreshVotes();renderVotes();}
 }
