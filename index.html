@@ -1,137 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Millions of Dead Bands</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #111;
-      color: #f5f0e8;
-      font-family: Georgia, serif;
-      text-align: center;
-    }
-    header {
-      padding: 22px;
-      border-bottom: 1px solid #444;
-      font: 12px Arial, sans-serif;
-      letter-spacing: 3px;
-    }
-    main { max-width: 850px; margin: 65px auto; padding: 24px; }
-    h1 {
-      font-size: clamp(42px, 8vw, 76px);
-      line-height: 1;
-      text-transform: uppercase;
-    }
-    .subtitle { color: #c7a66b; font-size: 21px; }
-    .intro { color: #ccc; line-height: 1.7; font-size: 17px; }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 40px 0;
-    }
-    .stat {
-      border: 1px solid #555;
-      padding: 20px 8px;
-    }
-    .number { display: block; color: #c7a66b; font-size: 32px; }
-    .label { color: #aaa; font: 12px Arial, sans-serif; }
-    #status { color: #c7a66b; font: 14px Arial, sans-serif; }
-    footer { color: #777; font: 12px Arial, sans-serif; padding: 30px; }
-    @media(max-width: 500px) {
-      .stats { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Millions of Dead Bands</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#11110f;--panel:#1b1a17;--ink:#f3eee5;--muted:#aaa397;--gold:#c7a66b;--line:#49443b;--red:#c86c5b;--green:#86a98a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,serif}
+header{border-bottom:1px solid var(--line);padding:17px 22px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font:11px Arial,sans-serif;letter-spacing:2.5px;color:var(--gold)}nav{display:flex;gap:8px;flex-wrap:wrap}
+button,select,input{font:14px Arial,sans-serif}button{cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);padding:10px 14px}button:hover,button.active{border-color:var(--gold);color:var(--gold)}button:disabled{opacity:.4;cursor:not-allowed}
+main{max-width:1100px;margin:0 auto;padding:38px 22px 70px}.hero{text-align:center;padding:35px 0 24px}h1{font-size:clamp(42px,8vw,78px);line-height:.98;text-transform:uppercase;margin:14px 0}.eyebrow{font:11px Arial,sans-serif;letter-spacing:3px;color:var(--gold)}.subtitle{font-size:21px;color:var(--gold)}.intro{color:#c9c2b7;line-height:1.7;max-width:650px;margin:18px auto}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:30px auto;max-width:650px}.stat,.panel,.artist-card,.match-card{border:1px solid var(--line);background:var(--panel);padding:18px}.number{display:block;color:var(--gold);font-size:30px}.label{font:10px Arial,sans-serif;letter-spacing:1.5px;color:var(--muted)}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;flex-wrap:wrap;margin:10px 0 20px}.section-head h2{margin:0;font-size:30px}.muted{color:var(--muted)}.small{font:12px Arial,sans-serif;color:var(--muted)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.toolbar select,.toolbar input,.panel select,.panel input{background:#10100e;color:var(--ink);border:1px solid var(--line);padding:10px;min-width:150px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.match-card{display:flex;flex-direction:column;gap:12px}.match-meta{font:10px Arial,sans-serif;letter-spacing:1px;color:var(--gold);text-transform:uppercase}.versus{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.artist-pick{min-height:90px;background:#121210;border:1px solid var(--line);padding:15px 10px;font-size:19px;line-height:1.2}.artist-pick:hover{border-color:var(--gold)}.artist-pick:disabled{cursor:default}.vs{color:var(--gold);font:11px Arial,sans-serif}.match-foot{display:flex;justify-content:space-between;gap:10px;align-items:center}.pill{font:10px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 0;border-bottom:1px solid #37332d}.row:last-child{border:0}.row strong{font-weight:normal}.progress{height:5px;background:#37332d;margin-top:7px}.progress span{display:block;height:100%;background:var(--gold)}
+.notice{padding:13px 15px;border:1px solid var(--line);color:var(--muted);line-height:1.5;margin:15px 0}.notice.error{border-color:var(--red);color:#e0a095}.notice.success{border-color:var(--green);color:#b7d1b8}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hidden{display:none!important}footer{text-align:center;padding:25px;color:#777;font:11px Arial,sans-serif;border-top:1px solid var(--line)}
+@media(max-width:600px){header{justify-content:center}nav{justify-content:center}.stats{grid-template-columns:1fr}.admin-grid{grid-template-columns:1fr}.section-head h2{font-size:25px}}
+</style>
 </head>
 <body>
-  <header>THE GREAT ROCK & ROLL ARTIST TOURNAMENT</header>
-  <main>
-    <h1>Millions of<br>Dead Bands</h1>
-    <div class="subtitle">576 Artists. One Champion.</div>
-    <p class="intro">
-      Thirty-six groups. Hundreds of head-to-head matchups.
-      One winner. Help decide the greatest artists in the
-      history of popular music.
-    </p>
-
-    <div class="stats">
-      <div class="stat">
-        <span class="number" id="artists">—</span>
-        <span class="label">ARTISTS</span>
-      </div>
-      <div class="stat">
-        <span class="number" id="groups">—</span>
-        <span class="label">GROUPS</span>
-      </div>
-      <div class="stat">
-        <span class="number" id="matches">—</span>
-        <span class="label">MATCHUPS</span>
-      </div>
-    </div>
-
-    <p id="status">Connecting to tournament database...</p>
-  </main>
-  <footer>Millions of Dead Bands · A celebration of popular music</footer>
-
-  <script>
-   const SUPABASE_URL = "https://ungpcizkwvbndkmxslpp.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_e5IgpKe0rsgSTy5n8L1Hxg_3cGLVOhB";
-
-    async function loadTournament() {
-      const status = document.getElementById("status");
-
-      try {
-        const db = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_KEY
-        );
-
-        const [artistResult, groupResult, matchResult] =
-          await Promise.all([
-            db.from("artists").select("id", { count: "exact", head: true }),
-            db.from("groups").select("id", { count: "exact", head: true }),
-            db.from("matches").select("id", { count: "exact", head: true })
-          ]);
-
-        if (artistResult.error) throw artistResult.error;
-        if (groupResult.error) throw groupResult.error;
-        if (matchResult.error) throw matchResult.error;
-
-        document.getElementById("artists").textContent =
-          artistResult.count ?? 0;
-        document.getElementById("groups").textContent =
-          groupResult.count ?? 0;
-        document.getElementById("matches").textContent =
-          matchResult.count ?? 0;
-
-        status.textContent = "Database connected successfully.";
-        } catch (error) {
-        console.error("Database error:", error);
-
-        const details = {};
-        for (const key of Object.getOwnPropertyNames(error)) {
-          details[key] = error[key];
-        }
-
-        status.textContent = "Connection problem: " + (
-    error?.message ||
-    error?.details ||
-    error?.hint ||
-    error?.code ||
-    String(error)
-);
-
-console.error("FULL ERROR:", error);
-console.error("ERROR PROPERTIES:", Object.getOwnPropertyNames(error || {}));
-console.error("ERROR STACK:", error?.stack);
-      }
-    }
-
-    loadTournament();
-  </script>
-</body>
-</html>
+<header><div class="brand">THE GREAT ROCK &amp; ROLL ARTIST TOURNAMENT</div><nav>
+<button data-page="home" class="active">Home</button><button data-page="vote">Vote</button><button data-page="groups">Groups</button><button data-page="results">Results</button><button data-page="admin">Admin</button>
+</nav></header>
+<main>
+<section id="page-home">
+<div class="hero"><div class="eyebrow">A COMPETITION IN POPULAR MUSIC</div><h1>Millions of<br>Dead Bands</h1><div class="subtitle">576 Artists. One Champion.</div><p class="intro">Thirty-six groups. Hundreds of head-to-head matchups. One winner. Help decide the greatest artists in the history of popular music.</p></div>
+<div class="stats"><div class="stat"><span class="number" id="artists-count">—</span><span class="label">ARTISTS</span></div><div class="stat"><span class="number" id="groups-count">—</span><span class="label">GROUPS</span></div><div class="stat"><span class="number" id="matches-count">—</span><span class="label">MATCHUPS</span></div></div>
+<div class="hero"><button class="active" data-goto="vote">ENTER THE TOURNAMENT →</button><p id="connection" class="small">Connecting to tournament database…</p></div>
+</section>
+<section id="page-vote" class="hidden"><div class="section-head"><div><div class="eyebrow">CAST YOUR BALLOT</div><h2>Head-to-head voting</h2></div><div class="small" id="vote-identity"></div></div>
+<div class="toolbar"><label class="small">GROUP <select id="vote-group"><option value="all">All groups</option></select></label><label class="small">STATUS <select id="vote-status"><option value="open">Open matchups</option><option value="all">All matchups</option><option value="closed">Closed / decided</option></select></label></div>
+<div id="vote-list" class="grid"></div><div id="vote-message" class="notice hidden"></div></section>
+<section id="page-groups" class="hidden"><div class="section-head"><div><div class="eyebrow">THE FIRST ROUND</div><h2>Thirty-six groups</h2></div></div><div id="group-list" class="grid"></div></section>
+<section id="page-results" class="hidden"><div class="section-head"><div><div class="eyebrow">THE TOURNAMENT SO FAR</div><h2>Results &amp; standings</h2></div></div><div class="toolbar"><label class="small">STAGE <select id="result-stage"><option value="all">All stages</option><option value="1">Group stage</option><option value="2">Championship bracket</option></select></label></div><div id="results-list" class="grid"></div></section>
+<section id="page-admin" class="hidden"><div class="section-head"><div><div class="eyebrow">TOURNAMENT MANAGEMENT</div><h2>Administrator</h2></div></div><div id="admin-gate" class="panel"><p>Administrator access is restricted. Your current anonymous account ID is:</p><p id="admin-user-id" class="small"></p><p class="small">Add this UUID to the tournament_admins table using the SQL instructions in the repository before using the controls.</p></div><div id="admin-content" class="hidden"><div class="notice">Expired matchups are automatically marked closed when the site is opened. Ties remain closed until an administrator selects the winner.</div><div id="admin-list"></div></div></section>
+</main><footer>Millions of Dead Bands · A celebration of popular music</footer>
+<script>
+const SUPABASE_URL="https://ungpcizkwvbndkmxslpp.supabase.co";
+const SUPABASE_KEY="sb_publishable_e5IgpKe0rsgSTy5n8L1Hxg_3cGLVOhB";
+const TOURNAMENT_ID="18aca8be-8860-490e-a253-e6c5c5a1976e";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null,isAdmin=false,artists=[],groups=[],matches=[],votes=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function showPage(name){document.querySelectorAll("main>section").forEach(s=>s.classList.toggle("hidden",s.id!=="page-"+name));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="vote")renderVotes();if(name==="groups")renderGroups();if(name==="results")renderResults();if(name==="admin")renderAdmin();}
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
+function groupName(n){return "Group "+n}
+function artistName(id){return artists.find(a=>a.id===id)?.name||"To be determined"}
+function voteCount(matchId,artistId){return votes.filter(v=>v.match_id===matchId&&v.artist_id===artistId).length}
+function matchOpen(m){return m.status==="pending"&&(!m.closes_at||new Date(m.closes_at)>new Date())}
+async function refreshVotes(){const r=await db.from("votes").select("match_id,artist_id");if(!r.error)votes=r.data||[]}
+async function load(){
+try{
+let auth=await db.auth.getSession();user=auth.data.session?.user||null;
+if(!user){const signed=await db.auth.signInAnonymously();if(signed.error)throw signed.error;user=signed.data.user;}
+$("vote-identity").textContent="Voting as a guest";
+await db.rpc("close_expired_tournament_matches");
+const [ar,gr,mr]=await Promise.all([
+db.from("artists").select("id,group_id,slot,name").order("group_id").order("slot"),
+db.from("groups").select("id,tournament_id,group_number").eq("tournament_id",TOURNAMENT_ID).order("group_number"),
+db.from("matches").select("id,tournament_id,stage,group_number,round_number,match_number,artist_a,artist_b,winner_id,status,closes_at").eq("tournament_id",TOURNAMENT_ID).order("stage").order("group_number").order("round_number").order("match_number")
+]);
+if(ar.error)throw ar.error;if(gr.error)throw gr.error;if(mr.error)throw mr.error;
+artists=ar.data||[];groups=gr.data||[];matches=mr.data||[];
+await refreshVotes();
+$("artists-count").textContent=artists.length;$("groups-count").textContent=groups.length;$("matches-count").textContent=matches.length;
+$("connection").textContent="Database connected · Guest voting enabled";
+$("vote-group").innerHTML='<option value="all">All groups</option>'+groups.map(g=>'<option value="'+g.group_number+'">'+groupName(g.group_number)+'</option>').join("");
+const admin=await db.rpc("is_tournament_admin");isAdmin=!!admin.data;
+}catch(e){console.error(e);$("connection").textContent="Database setup incomplete: "+(e.message||String(e));$("vote-list").innerHTML='<div class="notice error">Unable to load tournament data. Check the database setup instructions in the repository and enable Supabase anonymous sign-ins.</div>';}
+}
+function renderVotes(){
+const group=$("vote-group").value,status=$("vote-status").value;
+let list=matches.filter(m=>m.artist_a&&m.artist_b);
+if(group!=="all")list=list.filter(m=>String(m.group_number)===group);
+if(status==="open")list=list.filter(matchOpen);
+if(status==="closed")list=list.filter(m=>!matchOpen(m));
+$("vote-list").innerHTML=list.length?list.map(m=>{
+const a=artistName(m.artist_a),b=artistName(m.artist_b),open=matchOpen(m),winner=m.winner_id?artistName(m.winner_id):null;
+return '<article class="match-card"><div class="match-meta">'+(m.stage===1?groupName(m.group_number):"Championship bracket")+' · Round '+m.round_number+' · Match '+m.match_number+'</div><div class="versus"><button class="artist-pick" '+(!open?'disabled':'')+' onclick="castVote('+m.id+','+m.artist_a+')">'+esc(a)+'</button><span class="vs">VS</span><button class="artist-pick" '+(!open?'disabled':'')+' onclick="castVote('+m.id+','+m.artist_b+')">'+esc(b)+'</button></div><div class="match-foot"><span class="pill">'+(winner?'Winner: '+esc(winner):open?'Voting open':esc(m.status||"Closed"))+'</span><span class="small">'+voteCount(m.id,m.artist_a)+' — '+voteCount(m.id,m.artist_b)+' votes</span></div>'+(m.closes_at?'<div class="small">Closes '+new Date(m.closes_at).toLocaleString()+'</div>':'')+'</article>';
+}).join(""):'<div class="notice">No matchups currently match this filter. Championship matchups will appear when their participants have been assigned.</div>';
+}
+$("vote-group").addEventListener("change",renderVotes);$("vote-status").addEventListener("change",renderVotes);
+async function castVote(matchId,artistId){
+const msg=$("vote-message");msg.classList.remove("hidden","error","success");msg.textContent="Submitting your vote…";
+const r=await db.rpc("cast_tournament_vote",{p_match_id:matchId,p_artist_id:artistId});
+if(r.error){msg.classList.add("error");msg.textContent=r.error.message||"Vote could not be submitted.";}
+else{msg.classList.add("success");msg.textContent="Your vote has been recorded. Thank you.";await refreshVotes();renderVotes();}
+}
+function renderGroups(){
+$("group-list").innerHTML=groups.map(g=>{
+const members=artists.filter(a=>a.group_id===g.id),gm=matches.filter(m=>m.stage===1&&m.group_number===g.group_number),winner=gm.find(m=>m.winner_id&&gm.every(x=>x.winner_id||x.id===m.id));
+return '<article class="panel"><div class="match-meta">'+groupName(g.group_number)+'</div><div class="row"><strong>'+members.length+' artists</strong><span class="small">'+gm.filter(m=>m.winner_id).length+'/'+gm.length+' decided</span></div><div class="small">'+members.map(a=>esc(a.name)).join(" · ")+'</div>'+(winner?'<p class="small">Group winner: <strong>'+esc(artistName(winner.winner_id))+'</strong></p>':'')+'</article>';
+}).join("");
+}
+function renderResults(){
+const stage=$("result-stage").value;let list=matches;if(stage!=="all")list=list.filter(m=>String(m.stage)===stage);
+$("results-list").innerHTML=list.map(m=>'<article class="match-card"><div class="match-meta">'+(m.stage===1?groupName(m.group_number):"Championship bracket")+' · R'+m.round_number+' · #'+m.match_number+'</div><div class="row"><strong>'+esc(artistName(m.artist_a))+'</strong><span>'+voteCount(m.id,m.artist_a)+'</span></div><div class="row"><strong>'+esc(artistName(m.artist_b))+'</strong><span>'+voteCount(m.id,m.artist_b)+'</span></div><div class="match-foot"><span class="pill">'+(m.winner_id?'Winner: '+esc(artistName(m.winner_id)):esc(m.status||"Pending"))+'</span><span class="small">'+(m.closes_at?new Date(m.closes_at).toLocaleDateString():"No deadline set")+'</span></div></article>').join("")||'<div class="notice">No matches in this stage.</div>';
+}
+$("result-stage").addEventListener("change",renderResults);
+async function adminAction(fn,args){const r=await db.rpc(fn,args);if(r.error){alert(r.error.message||"Action failed");return;}await load();showPage("admin");}
+function renderAdmin(){
+$("admin-gate").classList.toggle("hidden",isAdmin);$("admin-content").classList.toggle("hidden",!isAdmin);$("admin-user-id").textContent=user?.id||"Not signed in";
+if(!isAdmin)return;
+const list=matches.filter(m=>m.status==="closed"||m.status==="pending");
+$("admin-list").innerHTML=list.map(m=>{
+const opts=[m.artist_a,m.artist_b].filter(Boolean).map(id=>'<option value="'+id+'">'+esc(artistName(id))+'</option>').join("");
+return '<article class="panel" style="margin-bottom:12px"><div class="match-meta">Match '+m.id+' · '+(m.stage===1?groupName(m.group_number):"Championship")+' · Round '+m.round_number+'</div><p>'+esc(artistName(m.artist_a))+' <span class="muted">vs</span> '+esc(artistName(m.artist_b))+'</p><div class="small">'+voteCount(m.id,m.artist_a)+' — '+voteCount(m.id,m.artist_b)+' votes · '+esc(m.status)+'</div><div class="admin-actions"><select id="winner-'+m.id+'"><option value="">Choose winner…</option>'+opts+'</select><button onclick="adminAction(\'admin_resolve_tournament_match\',{p_match_id:'+m.id+',p_winner_id:Number($(\'winner-'+m.id+'\').value)})">Set winner</button><input id="deadline-'+m.id+'" type="datetime-local"><button onclick="adminAction(\'admin_extend_tournament_match\',{p_match_id:'+m.id+',p_closes_at:new Date($(\'deadline-'+m.id+'\').value).toISOString()})">Extend / reopen</button><button onclick="adminAction(\'admin_close_tournament_match\',{p_match_id:'+m.id+'})">Close now</button></div></article>';
+}).join("")||'<div class="notice">No matches need administrator attention.</div>';
+}
+load().then(()=>{renderVotes();renderGroups();renderResults();});
+</script>
+</body></html>
