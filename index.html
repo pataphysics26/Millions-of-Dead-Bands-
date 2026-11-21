@@ -54,12 +54,12 @@ function groupName(n){return "Group "+n}
 function artistName(id){return artists.find(a=>a.id===id)?.name||"To be determined"}
 function voteCount(matchId,artistId){return votes.filter(v=>v.match_id===matchId&&v.artist_id===artistId).length}
 function matchOpen(m){return m.status==="pending"&&(!m.closes_at||new Date(m.closes_at)>new Date())}
-async function refreshVotes(){const r=await db.rpc("get_tournament_vote_totals_v1");if(!r.error)votes=r.data||[]}
+async function refreshVotes(){const r=await db.rpc("get_tournament_vote_totals_v1");if(r.error)throw r.error;votes=r.data||[]}
 async function load(){
 try{
 let auth=await db.auth.getSession();user=auth.data.session?.user||null;
 if(!user){const signed=await db.auth.signInAnonymously();if(signed.error)throw signed.error;user=signed.data.user;}
-$("vote-identity").textContent="Voting as a guest";
+$("vote-identity").textContent="Guest account ID: "+(user?.id||"unavailable");
 await db.rpc("close_expired_tournament_matches_v1");
 const [ar,gr,mr]=await Promise.all([
 db.from("artists").select("id,group_id,slot,name").order("group_id").order("slot"),
@@ -91,7 +91,7 @@ async function castVote(matchId,artistId){
 const msg=$("vote-message");msg.classList.remove("hidden","error","success");msg.textContent="Submitting your vote…";
 const r=await db.rpc("cast_tournament_vote_v1",{p_match_id:matchId,p_artist_id:artistId});
 if(r.error){msg.classList.add("error");msg.textContent=r.error.message||"Vote could not be submitted.";}
-else{msg.classList.add("success");msg.textContent="Your vote has been recorded. Thank you.";await refreshVotes();renderVotes();}
+else{msg.classList.add("success");msg.textContent="Your vote has been recorded. Thank you.";try{await refreshVotes();renderVotes();}catch(e){console.error("Vote saved, but totals refresh failed:",e);msg.textContent="Your vote was recorded, but vote totals could not refresh. Reload the page to try again.";}}
 }
 function renderGroups(){
 $("group-list").innerHTML=groups.map(g=>{
