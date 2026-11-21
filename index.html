@@ -52,7 +52,7 @@ document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",(
 document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.goto)));
 function groupName(n){return "Group "+n}
 function artistName(id){return artists.find(a=>a.id===id)?.name||"To be determined"}
-function voteCount(matchId,artistId){return votes.filter(v=>v.match_id===matchId&&v.artist_id===artistId).length}
+function voteCount(matchId,artistId){return votes.filter(v=>Number(v.match_id)===Number(matchId)&&Number(v.artist_id)===Number(artistId)).reduce((sum,v)=>sum+Number(v.vote_count||0),0)}
 function matchOpen(m){return m.status==="pending"&&(!m.closes_at||new Date(m.closes_at)>new Date())}
 async function refreshVotes(){const r=await db.rpc("get_tournament_vote_totals_v1");if(r.error)throw r.error;votes=r.data||[]}
 async function load(){
