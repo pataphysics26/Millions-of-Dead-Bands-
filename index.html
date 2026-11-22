@@ -87,7 +87,48 @@ return '<article class="match-card"><div class="match-meta">'+(m.stage===1?group
 }).join(""):'<div class="notice">No matchups currently match this filter. Championship matchups will appear when their participants have been assigned.</div>';
 }
 $("vote-group").addEventListener("change",renderVotes);$("vote-status").addEventListener("change",renderVotes);
-async function castVote(matchId,artistId){
+async function castVote(matchId, artistId) {
+  const msg = $("vote-message");
+
+  try {
+    msg.classList.remove("hidden", "error", "success");
+    msg.textContent = "Submitting your vote…";
+
+    // Verify that the visitor has an active session.
+    let auth = await db.auth.getSession();
+
+    if (!auth.data.session) {
+      const signed = await db.auth.signInAnonymously();
+      if (signed.error) throw signed.error;
+      user = signed.data.user;
+    } else {
+      user = auth.data.session.user;
+    }
+
+    // Submit the vote.
+    const r = await db.rpc("cast_tournament_vote_v1", {
+      p_match_id: matchId,
+      p_artist_id: artistId
+    });
+
+    if (r.error) throw r.error;
+
+    msg.classList.add("success");
+    msg.textContent = "Your vote has been recorded. Thank you.";
+
+    try {
+      await refreshVotes();
+      renderVotes();
+    } catch (e) {
+      console.error("Vote totals refresh failed:", e);
+    }
+
+  } catch (e) {
+    console.error("Vote submission failed:", e);
+    msg.classList.add("error");
+    msg.textContent = "Vote failed: " + (e.message || String(e));
+  }
+}
 const msg=$("vote-message");msg.classList.remove("hidden","error","success");msg.textContent="Submitting your vote…";
 const r=await db.rpc("cast_tournament_vote_v1",{p_match_id:matchId,p_artist_id:artistId});
 if(r.error){msg.classList.add("error");msg.textContent=r.error.message||"Vote could not be submitted.";}
